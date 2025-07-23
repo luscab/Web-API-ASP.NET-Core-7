@@ -19,5 +19,9 @@ namespace WebAPI.Model
             this.age = age;
             this.photo = photo;
         }
+
+        public Employee()
+        {
+        }
     }
 }
