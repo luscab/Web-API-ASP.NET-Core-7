@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Model;
-using WebAPI.ViewModel;
+using WebAPI.Application.ViewModel;
+using WebAPI.Domain.Model;
 
 namespace WebAPI.Controllers
 {
@@ -10,10 +10,12 @@ namespace WebAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository, ILogger<EmployeeController> logger)
         {
-            _employeeRepository = employeeRepository;
+            _employeeRepository = employeeRepository ?? throw new ArgumentNullException(nameof(employeeRepository));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [Authorize]
@@ -32,12 +34,15 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(int pageNumber, int pageQuantity)
         {
-            var employees = _employeeRepository.Get();
-            
+            _logger.Log(LogLevel.Error, "Erro generico");
+
+            var employees = _employeeRepository.Get(pageNumber, pageQuantity);
+
+            _logger.LogInformation("testando log");
+
             return Ok(employees);
         }
 

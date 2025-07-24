@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebAPI.Domain.Model;
 
 namespace WebAPI.Infrastructure
 {
     public class ConnectionContext : DbContext
     {
-        public DbSet<Model.Employee> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

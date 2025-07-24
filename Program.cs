@@ -1,8 +1,8 @@
-using WebAPI.Model;
-using WebAPI.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WebAPI.Domain.Model;
+using WebAPI.Infrastructure.Repositories;
 
 namespace WebAPI
 {
@@ -73,10 +73,15 @@ namespace WebAPI
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseExceptionHandler("/error");
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
+                
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
