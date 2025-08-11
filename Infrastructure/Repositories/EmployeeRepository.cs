@@ -1,5 +1,5 @@
 ﻿using WebAPI.Domain.DTOs;
-using WebAPI.Domain.Model;
+using WebAPI.Domain.Model.EmployeeAggregate;
 
 namespace WebAPI.Infrastructure.Repositories
 {
@@ -24,7 +24,7 @@ namespace WebAPI.Infrastructure.Repositories
 
         public List<EmployeeDTO> Get(int pageNumber, int pageQuantity)
         {
-            return _context.Employees.Skip(pageNumber * pageQuantity)
+            return _context.Employees.Skip((pageNumber -1) * pageQuantity)
                 .Take(pageQuantity)
                 .Select(e => 
                 new EmployeeDTO()

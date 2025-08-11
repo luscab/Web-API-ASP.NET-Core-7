@@ -1,9 +1,11 @@
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using WebAPI.Domain.Model;
+using WebAPI.Application.Mapping;
+using WebAPI.Application.Swagger;
+using WebAPI.Domain.Model.EmployeeAggregate;
 using WebAPI.Infrastructure.Repositories;
-
 namespace WebAPI
 {
     public class Program
@@ -15,10 +17,25 @@ namespace WebAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            builder.Services.AddAutoMapper(cfg => cfg.AddProfile<DomainToDTOMapping>());
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
+
+            builder.Services.AddApiVersioning().AddMvc().AddApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV";
+                setup.SubstituteApiVersionInUrl = true;
+            });
+
+            builder.Services.ConfigureOptions<ConfigureSwaggerGenOptions>();
+
             builder.Services.AddSwaggerGen(c =>
             {
+                c.OperationFilter<SwaggerDefaultValues>();
+
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -75,7 +92,14 @@ namespace WebAPI
             {
                 app.UseExceptionHandler("/error");
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    var version = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+                    foreach (var description in version.ApiVersionDescriptions)
+                    {
+                        options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Web API - {description.GroupName.ToUpper()}");
+                    }
+                });
             }
             else
             {
