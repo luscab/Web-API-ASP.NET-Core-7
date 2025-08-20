@@ -65,6 +65,17 @@ namespace WebAPI
 
             builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 
+            builder.Services.AddCors(options => {
+                    options.AddPolicy(name: "MyPolicy",
+                        policy =>
+                        {
+                            policy.WithOrigins("https://localhost:7164", "http://localhost:8081")
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod()
+                                  .AllowCredentials();
+                        });
+            });
+
             var key = Encoding.ASCII.GetBytes(Key.Secret);
 
             builder.Services.AddAuthentication(x =>
@@ -105,7 +116,9 @@ namespace WebAPI
             {
                 app.UseExceptionHandler("/error");
             }
-                
+
+            app.UseCors("MyPolicy");
+
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
